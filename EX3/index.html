@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>KCET Learning - Quiz Web Application</title>
-
-    <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <style>
@@ -12,43 +11,79 @@
             font-family: Arial, sans-serif;
             background-color: #f4f6f8;
         }
+
         .quiz-container {
             width: 520px;
             margin: 50px auto;
             background: #ffffff;
             padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            border-radius: 10px;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
         }
+
         h2 {
             text-align: center;
             color: #333;
         }
+
+        .progress {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
         .question {
             font-size: 18px;
             margin-bottom: 15px;
         }
+
         .options label {
             display: block;
             margin-bottom: 10px;
             cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: 0.2s;
         }
+
+        .options input {
+            margin-right: 8px;
+        }
+
+        .options label:hover {
+            background: #f1f5ff;
+        }
+
+        .options input:checked+span {
+            font-weight: bold;
+        }
+
         .buttons {
             margin-top: 20px;
             text-align: center;
         }
+
         button {
-            padding: 8px 16px;
+            padding: 8px 18px;
             margin: 5px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             background-color: #007bff;
             color: #ffffff;
             cursor: pointer;
+            transition: 0.2s;
         }
+
         button:hover {
             background-color: #0056b3;
         }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
         .result {
             display: none;
             text-align: center;
@@ -58,161 +93,109 @@
 
 <body>
 
-<div class="quiz-container">
-    <h2>KCET Learning - Online Quiz</h2>
+    <div class="quiz-container">
+        <h2>KCET Learning - Online Quiz</h2>
 
-    <div id="quiz">
-        <div class="question"></div>
-        <div class="options"></div>
+        <div class="progress"></div>
 
-        <div class="buttons">
-            <button id="prev">Previous</button>
-            <button id="next">Next</button>
+        <div id="quiz">
+            <div class="question"></div>
+            <div class="options"></div>
+
+            <div class="buttons">
+                <button id="prev">Previous</button>
+                <button id="next">Next</button>
+            </div>
+        </div>
+
+        <div class="result">
+            <h3 id="score"></h3>
+            <button id="restart">Restart Quiz</button>
         </div>
     </div>
 
-    <div class="result">
-        <h3 id="score"></h3>
-        <button id="restart">Restart Quiz</button>
-    </div>
-</div>
+    <script>
+        $(document).ready(function () {
 
-<script>
-$(document).ready(function () {
+            const questions = [
+                { question: "What does HTML stand for?", options: ["Hyper Text Markup Language", "High Text Machine Language", "Hyperlinks Text Mark Language", "None"], answer: 0 },
+                { question: "Which language is used for styling web pages?", options: ["HTML", "JQuery", "CSS", "XML"], answer: 2 },
+                { question: "Which symbol is used for jQuery?", options: ["$", "#", "&", "%"], answer: 0 },
+                { question: "Which HTML tag is used to define a hyperlink?", options: ["link", "a", "href", "hyper"], answer: 1 },
+                { question: "Which property is used to change text color in CSS?", options: ["font-color", "color", "text-color", "fgcolor"], answer: 1 },
+                { question: "Which JavaScript property is used to insert content into HTML?", options: ["document.write()", "window.write()", "innerHTML", "contentHTML"], answer: 2 },
+                { question: "Which event occurs when a button is clicked?", options: ["onchange", "onmouseover", "onclick", "onload"], answer: 2 },
+                { question: "Which jQuery method is used to hide elements?", options: ["hidden()", "hide()", "invisible()", "display(false)"], answer: 1 },
+                { question: "Which CSS property controls the size of text?", options: ["text-style", "font-size", "text-size", "font-style"], answer: 1 },
+                { question: "Who developed jQuery?", options: ["Google", "Microsoft", "Facebook", "John Resig"], answer: 3 }
+            ];
 
-    const questions = [
-        {
-            question: "What does HTML stand for?",
-            options: [
-                "Hyper Text Markup Language",
-                "High Text Machine Language",
-                "Hyperlinks Text Mark Language",
-                "None of the above"
-            ],
-            answer: 0
-        },
-        {
-            question: "Which language is used for styling web pages?",
-            options: ["HTML", "JQuery", "CSS", "XML"],
-            answer: 2
-        },
-        {
-            question: "Which symbol is used for jQuery?",
-            options: ["$", "#", "&", "%"],
-            answer: 0
-        },
-        {
-            question: "Which HTML tag is used to define a hyperlink?",
-            options: ["<link>", "<a>", "<href>", "<hyper>"],
-            answer: 1
-        },
-        {
-            question: "Which property is used to change text color in CSS?",
-            options: ["font-color", "color", "text-color", "fgcolor"],
-            answer: 1
-        },
-        {
-            question: "Which JavaScript property is used to insert content into HTML?",
-            options: [
-                "document.write()",
-                "window.write()",
-                "innerHTML",
-                "contentHTML"
-            ],
-            answer: 2
-        },
-        {
-            question: "Which event occurs when a button is clicked?",
-            options: ["onchange", "onmouseover", "onclick", "onload"],
-            answer: 2
-        },
-        {
-            question: "Which jQuery method is used to hide elements?",
-            options: ["hidden()", "hide()", "invisible()", "display(false)"],
-            answer: 1
-        },
-        {
-            question: "Which CSS property controls the size of text?",
-            options: ["text-style", "font-size", "text-size", "font-style"],
-            answer: 1
-        },
-        {
-            question: "Who developed jQuery?",
-            options: ["Google", "Microsoft", "Facebook", "John Resig"],
-            answer: 3
-        }
-    ];
+            let currentQuestion = 0;
+            let userAnswers = [];
 
-    let currentQuestion = 0;
-    let userAnswers = [];
+            function loadQuestion(index) {
+                $(".question").hide().fadeIn().text(questions[index].question);
+                $(".options").empty();
+                $(".progress").text(`Question ${index + 1} of ${questions.length}`);
 
-    function loadQuestion(index) {
-        $(".question").hide().fadeIn().text(questions[index].question);
-        $(".options").empty();
+                $("#prev").prop("disabled", index === 0);
 
-        $.each(questions[index].options, function (i, option) {
-            let checked = userAnswers[index] == i ? "checked" : "";
-            $(".options").append(`
-                <label>
-                    <input type="radio" name="option" value="${i}" ${checked}>
-                    ${option}
-                </label>
-            `);
-        });
-    }
-
-    $("#next").click(function () {
-        let selected = $("input[name='option']:checked").val();
-
-        if (selected === undefined) {
-            alert("Please select an answer before continuing!");
-            return;
-        }
-
-        userAnswers[currentQuestion] = parseInt(selected);
-
-        if (currentQuestion < questions.length - 1) {
-            currentQuestion++;
-            loadQuestion(currentQuestion);
-        } else {
-            showResult();
-        }
-    });
-
-    $("#prev").click(function () {
-        if (currentQuestion > 0) {
-            currentQuestion--;
-            loadQuestion(currentQuestion);
-        }
-    });
-
-    function showResult() {
-        let score = 0;
-
-        $.each(questions, function (i, q) {
-            if (userAnswers[i] === q.answer) {
-                score++;
+                $.each(questions[index].options, function (i, option) {
+                    let checked = userAnswers[index] == i ? "checked" : "";
+                    $(".options").append(`
+            <label>
+                <input type="radio" name="option" value="${i}" ${checked}>
+                <span>${option}</span>
+            </label>
+        `);
+                });
             }
+
+            $("#next").click(function () {
+                let selected = $("input[name='option']:checked").val();
+                if (selected === undefined) {
+                    alert("Please select an answer!");
+                    return;
+                }
+
+                userAnswers[currentQuestion] = parseInt(selected);
+
+                if (currentQuestion < questions.length - 1) {
+                    currentQuestion++;
+                    loadQuestion(currentQuestion);
+                } else {
+                    showResult();
+                }
+            });
+
+            $("#prev").click(function () {
+                currentQuestion--;
+                loadQuestion(currentQuestion);
+            });
+
+            function showResult() {
+                let score = 0;
+                $.each(questions, function (i, q) {
+                    if (userAnswers[i] === q.answer) score++;
+                });
+
+                $("#quiz").hide();
+                $(".result").fadeIn();
+                $("#score").text(`You scored ${score} out of ${questions.length}`);
+            }
+
+            $("#restart").click(function () {
+                currentQuestion = 0;
+                userAnswers = [];
+                $(".result").hide();
+                $("#quiz").fadeIn();
+                loadQuestion(currentQuestion);
+            });
+
+            loadQuestion(currentQuestion);
         });
-
-        $("#quiz").hide();
-        $(".result").fadeIn();
-        $("#score").text("You scored " + score + " out of " + questions.length);
-    }
-
-    $("#restart").click(function () {
-        currentQuestion = 0;
-        userAnswers = [];
-        $(".result").hide();
-        $("#quiz").fadeIn();
-        loadQuestion(currentQuestion);
-    });
-
-    loadQuestion(currentQuestion);
-});
-</script>
+    </script>
 
 </body>
+
 </html>
-
-
